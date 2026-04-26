@@ -1,6 +1,6 @@
-# reporting
+# relator
 
-`reporting` — библиотека шаблонов для автогенерации отчётов в Markdown и HTML.
+`relator` — библиотека шаблонов для автогенерации отчётов в Markdown и HTML.
 
 Главная идея:
 
@@ -44,6 +44,18 @@ python -m pip install -e .
 ```bash
 cd reporting
 uv pip install -e .
+```
+
+### Через pip из PyPI
+
+```bash
+python -m pip install relator
+```
+
+### Через uv из PyPI
+
+```bash
+uv pip install relator
 ```
 
 ### Через pip из GitHub
@@ -403,13 +415,13 @@ t.compile("report.md")
 ### Компиляция в файл
 
 ```bash
-reporting --template template.md --context context.json --output report.md
+relator --template template.md --context context.json --output report.md
 ```
 
 ### Только печать
 
 ```bash
-reporting --template template.md --context context.json --print
+relator --template template.md --context context.json --print
 ```
 
 ### Пример context.json

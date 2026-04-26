@@ -1,5 +1,5 @@
 [project]
-name = "reporting"
+name = "relator"
 version = "0.1.0"
 description = "Simple markdown/html report templating with loops, tables, lists and media."
 readme = "README.md"
@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [project.scripts]
-reporting = "reporting.cli:main"
+relator = "reporting.cli:main"
 
 [project.urls]
 Homepage = "https://example.com/reporting"
