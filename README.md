@@ -58,18 +58,6 @@ python -m pip install relator
 uv pip install relator
 ```
 
-### Через pip из GitHub
-
-```bash
-python -m pip install "git+https://github.com/threenebula23/Reporting.git"
-```
-
-### Через uv из GitHub
-
-```bash
-uv pip install "git+https://github.com/threenebula23/Reporting.git"
-```
-
 ---
 
 ## Быстрый старт
@@ -526,49 +514,8 @@ project/
 - CI-матрица: Linux, macOS, Windows
 - тестовая матрица Python: 3.9–3.13
 
----
 
-## Публикация и релиз
 
-### Локальная сборка
-
-```bash
-cd reporting
-python -m pip install --upgrade build
-python -m build
-```
-
-### Публикация в TestPyPI
-
-```bash
-python -m pip install --upgrade twine
-python -m twine upload --repository testpypi dist/*
-```
-
-### Публикация в PyPI
-
-```bash
-python -m twine upload dist/*
-```
-
-### Проверка установки (smoke test)
-
-```bash
-python -m pip install "git+https://github.com/threenebula23/Reporting.git"
-python -c "from reporting import Template; print(Template)"
-```
-
----
-
-## Минимальный чеклист перед релизом
-
-- [ ] Все тесты зелёные
-- [ ] README актуален
-- [ ] Версия обновлена
-- [ ] CHANGELOG заполнен
-- [ ] Пакет собирается (`sdist` + `wheel`)
-- [ ] Проверена установка через `pip`
-- [ ] Проверена установка через `uv`
 
 ---
 
