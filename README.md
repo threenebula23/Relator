@@ -61,8 +61,6 @@ python -m pip install relator
 ```bash
 uv pip install relator
 ```
-
-<<<<<<< HEAD
 ### Дополнительно: Pydantic и SQLAlchemy
 
 ```bash
@@ -71,8 +69,6 @@ python -m pip install "relator[pydantic]" "relator[sqlalchemy]"
 python -m pip install "relator[integrations]"
 ```
 
-=======
->>>>>>> 5652b1605af4b58c522420e60575abe2ce433bc2
 ---
 
 ## Быстрый старт
