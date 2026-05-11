@@ -9,6 +9,10 @@
 3. Смотрите предпросмотр `template.print()`.
 4. Компилируете отчёт в файл `template.compile(...)`.
 
+**Полная документация** (установка, все плейсхолдеры, интеграции, примеры): каталог [docs/](docs/).
+
+См. также: [поток данных](docs/data-flow.md), [концепции](docs/concepts.md), [примеры вывода Markdown](docs/rendering-samples.md), [витрина в `prototyping/example/00_showcase`](prototyping/example/00_showcase/README.md), [агенты и LLM](docs/agents-and-llms.md), [обзор для промпта](docs/llm-overview.md), [cookbook](docs/cookbook.md).
+
 ---
 
 ## Содержание
@@ -58,16 +62,12 @@ python -m pip install relator
 uv pip install relator
 ```
 
-### Через pip из GitHub
+### Дополнительно: Pydantic и SQLAlchemy
 
 ```bash
-python -m pip install "git+https://github.com/threenebula23/Reporting.git"
-```
-
-### Через uv из GitHub
-
-```bash
-uv pip install "git+https://github.com/threenebula23/Reporting.git"
+python -m pip install "relator[pydantic]" "relator[sqlalchemy]"
+# или одной группой:
+python -m pip install "relator[integrations]"
 ```
 
 ---
@@ -145,6 +145,36 @@ template.compile("report.md")
 - `[[VAR.TABLE]]`
 - `[[VAR.TABLE.NUMBERED]]`
 
+### Слоты `@@имя@@`
+
+Именованные вставки заполняются **после** подстановки `[[...]]` и циклов `%%len%%` (сырой текст/Markdown/HTML).
+
+- В шаблоне: `@@title_suffix@@`
+- В коде: `template.slot("title_suffix", " — v2")` или `render(extra={"__slot__title_suffix": " — v2"})`
+
+### PYDANTIC / SCHEMA
+
+Нужен пакет: `pip install relator[pydantic]`. В контексте — подкласс `BaseModel`, инстанс или `TypeAdapter`.
+
+- `[[PYDANTIC.VAR]]` — краткое описание и таблица полей
+- `[[PYDANTIC.VAR.TABLE]]` — только таблица полей
+- `[[PYDANTIC.VAR.JSON_SCHEMA]]` — JSON Schema в блоке кода
+- `[[PYDANTIC.VAR.EXAMPLE]]` — пример JSON-объекта по полям JSON Schema (эвристика / `examples` в полях)
+- `[[SCHEMA.VAR]]` — синоним `PYDANTIC`
+
+### SQL / ORM
+
+- `[[SQL.VAR]]` — значение `str` или SQLAlchemy `Executable`; вывод в fenced `sql`. Для компиляции выражений: `pip install relator[sqlalchemy]` и `Template(..., sql_dialect="sqlite")` (также `postgresql`, `mysql`).
+- `[[ORM.VAR.TABLE]]` (или `.COLUMNS`) — таблица колонок для `sqlalchemy.Table` или mapped-класса с `__table__`
+- `[[ORM.VAR.NAME]]` — имя таблицы
+- `[[ORM.VAR.DDL]]` — `CREATE TABLE` в fenced `sql` (диалект из `sql_dialect`)
+
+### Доступ к данным из Python (не для шаблона)
+
+- `template.get("name")` / `get("name", default)`
+- `template.table_keys("rows")` — порядок колонок как у `[[TABLE.rows]]`
+- `template.pick("rows", 0, "USER")` — ячейка строки
+
 ---
 
 ## Пошаговый API
@@ -153,7 +183,9 @@ template.compile("report.md")
 
 ```python
 from reporting import Template
-template = Template("template.md")
+
+template = Template("template.md", sql_dialect="sqlite")  # sql_dialect опционален
+template.slot("intro", "_Черновик._")
 ```
 
 ### 2) Добавить данные по одной переменной
@@ -182,10 +214,12 @@ from reporting import compile_template
 
 compile_template(
     template_path="template.md",
-    context={"name": [{"A": 1}], "names": ["x", "y"]},
+    context={"name": [{"A": 1}], "names": ["x", "y"], "__slot__intro": "…"},
     output_path="report.md",
 )
 ```
+
+Ключи `__slot__*` в `context` задают слоты `@@intro@@` и не используются как переменные для `[[...]]`.
 
 ---
 
@@ -412,6 +446,14 @@ t.compile("report.md")
 
 ## CLI
 
+### Манифест шаблона (JSON)
+
+```bash
+relator --template template.md --inspect
+```
+
+Вывод — список ожидаемых ключей контекста, слотов `@@...@@` и сырых плейсхолдеров (удобно для промпта агента и CI).
+
 ### Компиляция в файл
 
 ```bash
@@ -424,7 +466,18 @@ relator --template template.md --context context.json --output report.md
 relator --template template.md --context context.json --print
 ```
 
-### Пример context.json
+### Пример context.json со слотами
+
+Ключи `__slot__имя` задают слоты `@@имя@@` (не попадают в контекст `[[...]]`):
+
+```json
+{
+  "rows": [{"A": 1}],
+  "__slot__note": "_Черновик._"
+}
+```
+
+### Пример context.json (только данные)
 
 ```json
 {
@@ -437,8 +490,6 @@ relator --template template.md --context context.json --print
 ```
 
 ---
-
-## Ошибки и отладка
 
 ### `TemplateError: Unknown placeholder root ...`
 
@@ -525,54 +576,4 @@ project/
 - чтение/запись через UTF-8
 - CI-матрица: Linux, macOS, Windows
 - тестовая матрица Python: 3.9–3.13
-
----
-
-## Публикация и релиз
-
-### Локальная сборка
-
-```bash
-cd reporting
-python -m pip install --upgrade build
-python -m build
-```
-
-### Публикация в TestPyPI
-
-```bash
-python -m pip install --upgrade twine
-python -m twine upload --repository testpypi dist/*
-```
-
-### Публикация в PyPI
-
-```bash
-python -m twine upload dist/*
-```
-
-### Проверка установки (smoke test)
-
-```bash
-python -m pip install "git+https://github.com/threenebula23/Reporting.git"
-python -c "from reporting import Template; print(Template)"
-```
-
----
-
-## Минимальный чеклист перед релизом
-
-- [ ] Все тесты зелёные
-- [ ] README актуален
-- [ ] Версия обновлена
-- [ ] CHANGELOG заполнен
-- [ ] Пакет собирается (`sdist` + `wheel`)
-- [ ] Проверена установка через `pip`
-- [ ] Проверена установка через `uv`
-
----
-
-## Лицензия
-
-MIT.
 

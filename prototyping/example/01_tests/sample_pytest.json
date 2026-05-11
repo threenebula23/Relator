@@ -1,0 +1,12 @@
+{
+  "summary": {
+    "total": 42,
+    "passed": 40,
+    "failed": 2,
+    "skipped": 0
+  },
+  "failed_tests": [
+    {"nodeid": "tests/test_api.py::test_create", "message": "AssertionError: status 500"},
+    {"nodeid": "tests/test_auth.py::test_token", "message": "Timeout"}
+  ]
+}

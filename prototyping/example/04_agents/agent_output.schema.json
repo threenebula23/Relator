@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/relator/agent_output.schema.json",
+  "title": "AgentReportOutput",
+  "type": "object",
+  "required": ["tasks"],
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "description": "Строки таблицы задач для [[TABLE.tasks]]",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "summary_md": {
+      "type": "string",
+      "description": "Markdown для слота @@summary@@ (ключ в скрипте маппится в slot(\"summary\", ...))"
+    },
+    "risks_md": {
+      "type": "string",
+      "description": "Markdown для слота @@risks@@"
+    }
+  },
+  "additionalProperties": true
+}

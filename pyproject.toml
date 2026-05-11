@@ -1,12 +1,12 @@
 [project]
 name = "relator"
-version = "0.1.0"
-description = "Simple markdown/html report templating with loops, tables, lists and media."
+version = "1.1.0"
+description = "Simple markdown/html report templating with loops, tables, lists, media, slots, Pydantic and SQLAlchemy."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "reporting maintainers" }]
-keywords = ["report", "template", "markdown", "html"]
+keywords = ["report", "template", "markdown", "html", "pydantic", "sqlalchemy"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -29,9 +29,9 @@ dependencies = [
 relator = "reporting.cli:main"
 
 [project.urls]
-Homepage = "https://example.com/reporting"
-Repository = "https://example.com/reporting"
-Documentation = "https://example.com/reporting/docs"
+Homepage = "https://github.com/threenebula23/Relator"
+Repository = "https://github.com/threenebula23/Relator"
+Documentation = "https://github.com/threenebula23/Relator/tree/master/reporting/docs"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -44,4 +44,7 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0"]
+pydantic = ["pydantic>=2"]
+sqlalchemy = ["sqlalchemy>=2"]
+integrations = ["pydantic>=2", "sqlalchemy>=2"]
+dev = ["pytest>=7.0", "pydantic>=2", "sqlalchemy>=2"]

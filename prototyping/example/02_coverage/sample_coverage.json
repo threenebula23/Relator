@@ -1,0 +1,11 @@
+{
+  "totals": {
+    "covered_lines": 120,
+    "num_statements": 150,
+    "percent_covered": 80.0
+  },
+  "files": {
+    "src/module_a.py": {"summary": {"percent_covered": 95.0}},
+    "src/module_b.py": {"summary": {"percent_covered": 62.5}}
+  }
+}

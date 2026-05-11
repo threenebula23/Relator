@@ -1,0 +1,8 @@
+{
+  "title": "Продажи Q1",
+  "kpi": [
+    {"region": "EU", "revenue": "120k"},
+    {"region": "US", "revenue": "95k"}
+  ],
+  "highlights": ["Запуск продукта B", "Рост EU +12%"]
+}
