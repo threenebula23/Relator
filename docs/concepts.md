@@ -9,7 +9,7 @@
 3. **Слоты** — именованные вставки `@@имя@@`, заполняемые **после** плейсхолдеров строкой произвольного текста.
 4. **Результат** — строка (`render`) или файл (`compile`).
 
-Подробная карта передачи данных: [data-flow.md](data-flow.md).
+Подробная карта передачи данных: [data-flow.md](data-flow.md). **Как выглядит готовый Markdown** в файле: [rendering-samples.md](rendering-samples.md) и [placeholders.md](placeholders.md).
 
 ## Глоссарий
 

@@ -38,6 +38,8 @@ template.render(extra={"__slot__intro": "..."})
 - `print(extra=None, width=100) -> str` — то же + вывод в терминал (Rich).
 - `compile(output_path, extra=None) -> Path` — запись в файл.
 
+**Пример:** шаблон `# [[t]]`, данные `t` → `"Hi"` → в файле одна строка `# Hi`. Таблицы и списки см. [placeholders.md](placeholders.md) и [rendering-samples.md](rendering-samples.md).
+
 ### Доступ к контексту (без шаблона)
 
 Удобно в скриптах сборки отчёта, тестах, CI:

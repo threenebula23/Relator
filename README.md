@@ -11,7 +11,7 @@
 
 **Полная документация** (установка, все плейсхолдеры, интеграции, примеры): каталог [docs/](docs/).
 
-См. также: [поток данных](docs/data-flow.md), [концепции](docs/concepts.md), [примеры вывода Markdown](docs/rendering-samples.md), [витрина в `prototyping/example/00_showcase`](prototyping/example/00_showcase/README.md), [агенты и LLM](docs/agents-and-llms.md), [обзор для промпта](docs/llm-overview.md), [cookbook](docs/cookbook.md).
+См. также: [поток данных](docs/data-flow.md), [концепции](docs/concepts.md), [примеры вывода Markdown](docs/rendering-samples.md), [справочник с примерами результата](docs/placeholders.md), [витрина в `prototyping/example/00_showcase`](prototyping/example/00_showcase/README.md), [агенты и LLM](docs/agents-and-llms.md), [обзор для промпта](docs/llm-overview.md), [cookbook](docs/cookbook.md).
 
 ---
 
