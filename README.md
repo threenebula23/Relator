@@ -62,6 +62,7 @@ python -m pip install relator
 uv pip install relator
 ```
 
+<<<<<<< HEAD
 ### Дополнительно: Pydantic и SQLAlchemy
 
 ```bash
@@ -70,6 +71,8 @@ python -m pip install "relator[pydantic]" "relator[sqlalchemy]"
 python -m pip install "relator[integrations]"
 ```
 
+=======
+>>>>>>> 5652b1605af4b58c522420e60575abe2ce433bc2
 ---
 
 ## Быстрый старт
@@ -576,4 +579,3 @@ project/
 - чтение/запись через UTF-8
 - CI-матрица: Linux, macOS, Windows
 - тестовая матрица Python: 3.9–3.13
-
