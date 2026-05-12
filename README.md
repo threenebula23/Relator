@@ -23,8 +23,6 @@ t.compile("out.md")
 
 [docs/GUIDE.md](docs/GUIDE.md) — синтаксис, API, пример шаблон + код.
 
-[prototyping/example/99_full_reference/](prototyping/example/99_full_reference/) — длинный шаблон и скрипт сборки.
-
 Остальные сценарии: [prototyping/example/README.md](prototyping/example/README.md).
 
 ## CLI
