@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+- **Breaking:** пакет для импорта переименован с `reporting` на `relator` (`from relator import Template`). CLI по-прежнему команда `relator`.
+- Документация сведена в [docs/GUIDE.md](docs/GUIDE.md); добавлен пример [prototyping/example/99_full_reference/](prototyping/example/99_full_reference/).
+
 ## 1.1
 
 - Added named slots `@@slot_name@@` filled after placeholder rendering; `Template.slot(name, value)` and `extra` keys `__slot__name`.

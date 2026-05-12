@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from reporting import Template
+from relator import Template
 
 
 def main() -> None:

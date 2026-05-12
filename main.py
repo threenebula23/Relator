@@ -1,7 +1,9 @@
-"""Run reporting CLI from local project checkout."""
+from relator import Template
 
-from reporting.cli import main
+def main():
+    """ главная функция"""
+
+    return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+print(main.__annotations__)

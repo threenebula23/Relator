@@ -1,6 +1,6 @@
 [project]
 name = "relator"
-version = "1.1.0"
+version = "1.2.0"
 description = "Simple markdown/html report templating with loops, tables, lists, media, slots, Pydantic and SQLAlchemy."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -26,12 +26,12 @@ dependencies = [
 ]
 
 [project.scripts]
-relator = "reporting.cli:main"
+relator = "relator.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/threenebula23/Relator"
 Repository = "https://github.com/threenebula23/Relator"
-Documentation = "https://github.com/threenebula23/Relator/tree/master/reporting/docs"
+Documentation = "https://github.com/threenebula23/Relator/blob/master/reporting/docs/GUIDE.md"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

@@ -84,4 +84,4 @@ python prototyping/example/00_showcase/build_report.py
 
 Быстро сравнить шаблон `template.md` с готовым видом отчёта и перенести приёмы в свой проект.
 
-Статичные мини-примеры вывода по каждому типу плейсхолдера — в [../../docs/rendering-samples.md](../../docs/rendering-samples.md).
+Справочник по синтаксису: [../../docs/GUIDE.md](../../docs/GUIDE.md).
