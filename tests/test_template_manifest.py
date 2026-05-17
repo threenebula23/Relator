@@ -43,6 +43,12 @@ def test_validate_missing_context_key() -> None:
         validate_template_context(tpl, {"__slot__summary": "x", "__slot__risks": "y"})
 
 
+def test_manifest_tree_json_keys() -> None:
+    m = build_template_manifest("[[TREE.files]]\n[[JSON.meta]]\n[[JSON.meta.RAW]]")
+    assert "files" in m["context_keys"]
+    assert "meta" in m["context_keys"]
+
+
 def test_manifest_json_roundtrip() -> None:
     from relator.template_manifest import manifest_json
 

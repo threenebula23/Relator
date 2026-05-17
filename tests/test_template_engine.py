@@ -112,3 +112,80 @@ def test_print_returns_rendered_text(tmp_path: Path) -> None:
     rendered = t.print(width=60)
     assert "Hello World" in rendered
 
+
+def test_tree_placeholder(tmp_path: Path) -> None:
+    layout = {
+        "demo-proj": {
+            "README.md": None,
+            "docs": {"api.md": None},
+            "src": {"main.py": None},
+        }
+    }
+    template_path = _write_template(tmp_path, "[[TREE.layout]]\n---\n[[TREE.layout2.COMPACT]]")
+    out_path = tmp_path / "out.md"
+    t = Template(template_path)
+    t.data(["layout", layout])
+    t.data(["layout2", {"a": {"b": None}}])
+    t.compile(out_path)
+    text = out_path.read_text(encoding="utf-8")
+    assert "demo-proj/" in text
+    assert "README.md" in text
+    assert "docs/" in text
+    assert "│" in text
+
+
+def test_json_placeholder(tmp_path: Path) -> None:
+    template_path = _write_template(tmp_path, "[[JSON.cfg]]\n[[JSON.cfg.RAW]]")
+    out_path = tmp_path / "out.md"
+    t = Template(template_path)
+    t.data(["cfg", {"x": 1, "y": [2, 3]}])
+    t.compile(out_path)
+    text = out_path.read_text(encoding="utf-8")
+    assert "```json" in text
+    assert '"x": 1' in text
+    assert text.count("{") >= 2
+
+
+def test_render_block_once(tmp_path: Path) -> None:
+    template_path = _write_template(
+        tmp_path,
+        "%%render%%\n[[LIST.items]]\n[[TREE.fs]]\n%%\nfooter",
+    )
+    out_path = tmp_path / "out.md"
+    t = Template(template_path)
+    t.data(["items", ["a", "b"]])
+    t.data(["fs", {"root": {"f.txt": None}}])
+    t.compile(out_path)
+    text = out_path.read_text(encoding="utf-8")
+    assert "- a" in text
+    assert "root/" in text
+    assert "footer" in text
+
+
+def test_compile_save_context_and_inject(tmp_path: Path) -> None:
+    template_path = _write_template(tmp_path, "[[title]] [[x]]")
+    out1 = tmp_path / "r1.md"
+    t = Template(template_path)
+    t.data(["title", "T"])
+    t.data(["x", 1])
+    t.compile(out1, save_context=True)
+    ctx_file = tmp_path / "r1.relator-context.json"
+    assert ctx_file.is_file()
+    tpl2 = _write_template(tmp_path, "[[title]] [[x]] [[y]]")
+    t2 = Template(tpl2)
+    t2.inject(out1)
+    t2.data(["y", 2])
+    out2 = tmp_path / "r2.md"
+    t2.compile(out2)
+    assert out2.read_text(encoding="utf-8").strip() == "T 1 2"
+
+
+def test_inject_replace(tmp_path: Path) -> None:
+    p = tmp_path / "ctx.json"
+    p.write_text('{"a": 1}', encoding="utf-8")
+    tpl = _write_template(tmp_path, "[[a]]")
+    t = Template(tpl)
+    t.data(["a", 99])
+    t.inject(p, replace=True)
+    assert t.render().strip() == "1"
+
