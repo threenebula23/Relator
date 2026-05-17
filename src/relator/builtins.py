@@ -1,10 +1,12 @@
 from __future__ import annotations
+import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 from .errors import TemplateError
 from .media import render_media_markup, resolve_media_value
 from .resolver import LoopInfo, get_loop_for_var
+from .tree_render import render_tree_mapping
 
 def ensure_sequence(name: str, value: Any) -> list[Any]:
     if isinstance(value, (str, bytes)) or not isinstance(value, Sequence):
@@ -127,6 +129,38 @@ def resolve_list_namespace(namespace: str, path_parts: list[str], root_context: 
     var_name = path_parts[0]
     seq = ensure_sequence(var_name, root_context.get(var_name))
     return render_list(seq, ordered=namespace == 'ENUM')
+
+def resolve_tree_namespace(path_parts: list[str], root_context: Mapping[str, Any]) -> str:
+    if not path_parts:
+        raise TemplateError('TREE namespace requires variable name.')
+    var_name = path_parts[0]
+    flags = {p.upper() for p in path_parts[1:]}
+    compact = 'COMPACT' in flags
+    dirs_first = 'DIRS_FIRST' in flags
+    if var_name not in root_context:
+        raise TemplateError(f"Unknown variable '{var_name}' for [[TREE.{var_name}]].")
+    value = root_context[var_name]
+    if not isinstance(value, Mapping):
+        raise TemplateError(f"TREE.{var_name} must be a mapping (dict-like), got {type(value).__name__}.")
+    return render_tree_mapping(value, compact=compact, dirs_first=dirs_first)
+
+
+def resolve_json_namespace(path_parts: list[str], root_context: Mapping[str, Any]) -> str:
+    if not path_parts:
+        raise TemplateError('JSON namespace requires variable name.')
+    var_name = path_parts[0]
+    flags = {p.upper() for p in path_parts[1:]}
+    if var_name not in root_context:
+        raise TemplateError(f"Unknown variable '{var_name}' for [[JSON.{var_name}]].")
+    value = root_context[var_name]
+    try:
+        text = json.dumps(value, ensure_ascii=False, indent=None if 'INLINE' in flags else 2)
+    except (TypeError, ValueError) as e:
+        raise TemplateError(f'JSON.{var_name}: value is not JSON-serializable.') from e
+    if 'RAW' in flags:
+        return text
+    return '```json\n' + text + '\n```'
+
 
 def resolve_media_namespace(path_parts: list[str], root_context: Mapping[str, Any], assets_dir: Path, template_kind: str) -> str:
     if not path_parts:

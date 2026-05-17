@@ -17,7 +17,7 @@ def _context_keys_from_placeholder(placeholder: str) -> set[str]:
     first_upper = parts[0].upper()
     if first_upper in ('CELL', 'ITEM'):
         return set()
-    if first_upper in ('TABLE', 'LIST', 'ENUM', 'MEDIA', 'PYDANTIC', 'SCHEMA', 'SQL', 'ORM'):
+    if first_upper in ('TABLE', 'LIST', 'ENUM', 'MEDIA', 'PYDANTIC', 'SCHEMA', 'SQL', 'ORM', 'TREE', 'JSON'):
         return {parts[1]} if len(parts) >= 2 else set()
     if len(parts) >= 2 and parts[1].upper() == 'TABLE':
         return {parts[0]}

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,25 @@ from .errors import TemplateError
 from .slots import SLOT_RE, replace_slots
 SLOT_KEY_PREFIX = '__slot__'
 _MISSING = object()
+
+
+def _context_sidecar_path(report_path: Path) -> Path:
+    return report_path.with_name(report_path.stem + '.relator-context.json')
+
+
+def _json_safe_for_context(value: Any) -> Any:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, dict):
+        return {str(k): _json_safe_for_context(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe_for_context(x) for x in value]
+    return f'<non-serializable:{type(value).__name__}>'
+
+
+def _write_context_json(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({k: _json_safe_for_context(v) for k, v in data.items()}, ensure_ascii=False, indent=2), encoding='utf-8')
 
 class Template:
 
@@ -65,6 +85,27 @@ class Template:
         self._slots[name] = value if isinstance(value, str) else str(value)
         return self
 
+    def inject(self, source: str | Path, *, context_path: str | Path | None=None, replace: bool=False) -> Template:
+        src = Path(source)
+        if replace:
+            self._data.clear()
+        if context_path is not None:
+            jpath = Path(context_path)
+        elif src.suffix.lower() == '.json':
+            jpath = src
+        else:
+            jpath = _context_sidecar_path(src)
+        if not jpath.is_file():
+            raise TemplateError(f'Context JSON not found: {jpath}')
+        try:
+            raw = json.loads(jpath.read_text(encoding='utf-8'))
+        except json.JSONDecodeError as e:
+            raise TemplateError(f'Invalid JSON in context file {jpath}') from e
+        if not isinstance(raw, dict):
+            raise TemplateError(f'Context JSON root must be an object, got {type(raw).__name__}.')
+        self._data.update({str(k): v for k, v in raw.items()})
+        return self
+
     def render(self, extra: dict[str, Any] | None=None) -> str:
         merged = dict(self._data)
         slot_map: dict[str, str] = dict(self._slots)
@@ -90,14 +131,23 @@ class Template:
             console.print(rendered)
         return rendered
 
-    def compile(self, output_path: str | Path, extra: dict[str, Any] | None=None) -> Path:
+    def compile(self, output_path: str | Path, extra: dict[str, Any] | None=None, save_context: bool | Path=False) -> Path:
         rendered = self.render(extra=extra)
         output = Path(output_path)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding='utf-8')
+        if save_context is not False:
+            ctx_out = _context_sidecar_path(output) if save_context is True else Path(save_context)
+            merged_ctx = dict(self._data)
+            if extra:
+                for key, val in extra.items():
+                    if isinstance(key, str) and key.startswith(SLOT_KEY_PREFIX):
+                        continue
+                    merged_ctx[key] = val
+            _write_context_json(ctx_out, merged_ctx)
         return output
 
-def compile_template(template_path: str | Path, context: dict[str, Any], output_path: str | Path, assets_dir: str | Path | None=None, sql_dialect: str | None=None, extra: dict[str, Any] | None=None) -> Path:
+def compile_template(template_path: str | Path, context: dict[str, Any], output_path: str | Path, assets_dir: str | Path | None=None, sql_dialect: str | None=None, extra: dict[str, Any] | None=None, save_context: bool | Path=False) -> Path:
     t = Template(template_path=template_path, assets_dir=assets_dir, sql_dialect=sql_dialect)
     merged_extra: dict[str, Any] = {}
     prefix = SLOT_KEY_PREFIX
@@ -108,4 +158,4 @@ def compile_template(template_path: str | Path, context: dict[str, Any], output_
             t.data([name, value])
     if extra:
         merged_extra.update(extra)
-    return t.compile(output_path=output_path, extra=merged_extra if merged_extra else None)
+    return t.compile(output_path=output_path, extra=merged_extra if merged_extra else None, save_context=save_context)

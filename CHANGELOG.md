@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+
+- Плейсхолдер **`[[TREE.var]]`**: ASCII-дерево из вложенного `dict` (каталог = непустой вложенный mapping, лист = `None` или `{}`); суффиксы **`COMPACT`**, **`DIRS_FIRST`**; защита от циклов и лимит глубины.
+- Плейсхолдер **`[[JSON.var]]`**: вывод значения в JSON; суффиксы **`RAW`** (без ограждения), **`INLINE`** (одна строка); по умолчанию блок кода Markdown `` ```json ``.
+- Блок **`%%render%%`** … **`%%`**: тело шаблона рендерится один раз; вместе с **`%%len=%%`** выбирается блок с меньшим номером строки открытия.
+- **`Template.compile(..., save_context=True | Path)`**: сохранение контекста в JSON (`stem.relator-context.json` рядом с отчётом или явный путь); несериализуемые значения заменяются на строку `<non-serializable:ИмяТипа>`.
+- **`Template.inject(source, *, context_path=..., replace=False)`**: загрузка контекста из `.json` или соседнего `*.relator-context.json` для `.md`/`.html`; слияние в `_data`, опционально полная замена контекста.
+- **`compile_template(..., save_context=...)`**: проброс сохранения контекста.
+- Манифест шаблона учитывает ключи **`TREE`** и **`JSON`**; обновлён [docs/GUIDE.md](docs/GUIDE.md).
+
 ## 1.2.0
 
 - **Breaking:** пакет для импорта переименован с `reporting` на `relator` (`from relator import Template`). CLI по-прежнему команда `relator`.
